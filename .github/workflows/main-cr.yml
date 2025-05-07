@@ -20,7 +20,7 @@ on:
 
 jobs:
   call-cr-handler:
-    uses: org-name/github-reusable-workflows/.github/workflows/cr-handler.yml@main
+    uses: Avee07/github-reusable-workflows/.github/workflows/cr-handler.yml@main
     with:
       site: ${{ inputs.site }}
       subnet_info: ${{ inputs.subnet_info }}
