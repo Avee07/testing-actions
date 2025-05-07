@@ -1,0 +1,27 @@
+# File: .github/workflows/main-cr.yml
+
+name: Trigger CR Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      site:
+        description: "Site"
+        required: true
+        type: string
+      subnet_info:
+        description: "Subnet Info"
+        required: true
+        type: string
+      state:
+        description: "State (create/implement/close)"
+        required: true
+        type: string
+
+jobs:
+  call-cr-handler:
+    uses: org-name/github-reusable-workflows/.github/workflows/cr-handler.yml@main
+    with:
+      site: ${{ inputs.site }}
+      subnet_info: ${{ inputs.subnet_info }}
+      state: ${{ inputs.state }}
