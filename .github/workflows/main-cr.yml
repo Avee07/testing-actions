@@ -5,42 +5,45 @@ on:
     branches: [main]
   workflow_dispatch:
     inputs:
-      target_state:
-        description: "Which state to run (create, implement, close, all)"
+      create_cr:
+        description: "Yes or No"
         required: true
-        default: "all"
+        default: "Yes"
+      site:
+        description: "Site"
+        required: true
+        default: "cloud-svldev-1"
+      subnet_info:
+        description: "Subnet Info"
   workflow_call:
 
 jobs:
   create-cr:
-    if: ${{ github.event.inputs.target_state == 'create' || github.event.inputs.target_state == 'all' }}
+    if: ${{ github.event.inputs.create_cr == 'yes' && github.event.inputs.subnet_info != '' }}
     uses: Avee07/github-reusable-workflows/.github/workflows/mock-change-request.yml@main
     with:
-      site: rtp
-      subnet_info: 10.0.0.1/24
+      site: ${{ github.event.inputs.site }}
+      subnet_info: ${{ github.event.inputs.subnet_info }}
       state: create
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
 
   implement-cr:
-    if: ${{ github.event.inputs.target_state == 'implement' || github.event.inputs.target_state == 'all' }}
+    if: ${{github.event.inputs.create_cr == 'yes'}}
     needs: create-cr
     uses: Avee07/github-reusable-workflows/.github/workflows/mock-change-request.yml@main
     with:
-      site: rtp
-      subnet_info: 10.0.0.1/24
       state: implement
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
 
   close-cr:
-    if: ${{ github.event.inputs.target_state == 'close' || github.event.inputs.target_state == 'all' }}
+    if: ${{ github.event.inputs.create_cr == 'yes' }}
     needs: [create-cr, implement-cr]
     uses: Avee07/github-reusable-workflows/.github/workflows/mock-change-request.yml@main
     with:
-      site: rtp
-      subnet_info: 10.0.0.1/24
       state: close
       close_code: close_successful
     secrets:
+
       token: ${{ secrets.GITHUB_TOKEN }}
