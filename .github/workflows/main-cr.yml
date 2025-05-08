@@ -8,7 +8,7 @@ on:
       create_cr:
         description: "Yes or No"
         required: true
-        default: "Yes"
+        default: "yes"
       site:
         description: "Site"
         required: true
