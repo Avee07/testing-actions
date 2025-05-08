@@ -1,5 +1,3 @@
-# File: .github/workflows/main-cr.yml
-
 name: Trigger CR Workflow
 
 on:
@@ -29,8 +27,4 @@ jobs:
       site: ${{ inputs.site }}
       subnet_info: ${{ inputs.subnet_info }}
       state: ${{ inputs.state }}
-
-  call-reusable:
-    uses: Avee07/github-reusable-workflows/.github/workflows/cr-handler.yml@main
-    with:
-      script_path: ${{ github.event.inputs.script_path }}
+      script_path: ${{ inputs.script_path }}
