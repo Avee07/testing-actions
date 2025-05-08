@@ -17,6 +17,10 @@ on:
         description: "State (create/implement/close)"
         required: true
         type: string
+      script_path:
+        description: "Path to the Python script to run"
+        required: true
+        default: "scripts/hello.py"
 
 jobs:
   call-cr-handler:
@@ -25,3 +29,8 @@ jobs:
       site: ${{ inputs.site }}
       subnet_info: ${{ inputs.subnet_info }}
       state: ${{ inputs.state }}
+
+  call-reusable:
+    uses: Avee07//github-reusable-workflows/.github/workflows/cr-handler.yml@main
+    with:
+      script_path: ${{ github.event.inputs.script_path }}
