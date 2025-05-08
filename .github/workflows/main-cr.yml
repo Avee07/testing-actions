@@ -24,6 +24,7 @@ jobs:
       token: ${{ secrets.GITHUB_TOKEN }}
 
   close-cr:
+    needs: [create-cr, implement-cr]
     uses: Avee07/github-reusable-workflows/.github/workflows/mock-change-request.yml@main
     with:
       site: rtp
