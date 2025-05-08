@@ -1,6 +1,8 @@
 name: Trigger CR Stages
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
   workflow_call:
 
