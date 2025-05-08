@@ -10,6 +10,8 @@ jobs:
       site: rtp
       subnet_info: 10.0.0.1/24
       state: create
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
 
   implement-cr:
     uses: Avee07/github-reusable-workflows/.github/workflows/mock-change-request.yml@main
@@ -17,6 +19,8 @@ jobs:
       site: rtp
       subnet_info: 10.0.0.1/24
       state: implement
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
 
   close-cr:
     uses: Avee07/github-reusable-workflows/.github/workflows/mock-change-request.yml@main
@@ -25,3 +29,5 @@ jobs:
       subnet_info: 10.0.0.1/24
       state: close
       close_code: close_successful
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
