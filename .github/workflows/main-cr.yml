@@ -31,6 +31,6 @@ jobs:
       state: ${{ inputs.state }}
 
   call-reusable:
-    uses: Avee07//github-reusable-workflows/.github/workflows/cr-handler.yml@main
+    uses: Avee07/github-reusable-workflows/.github/workflows/cr-handler.yml@main
     with:
       script_path: ${{ github.event.inputs.script_path }}
