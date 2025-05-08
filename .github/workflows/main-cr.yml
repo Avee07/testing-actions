@@ -14,6 +14,7 @@ jobs:
       token: ${{ secrets.GITHUB_TOKEN }}
 
   implement-cr:
+    needs: create-cr
     uses: Avee07/github-reusable-workflows/.github/workflows/mock-change-request.yml@main
     with:
       site: rtp
