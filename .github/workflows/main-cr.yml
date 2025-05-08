@@ -4,10 +4,16 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      target_state:
+        description: "Which state to run (create, implement, close, all)"
+        required: true
+        default: "all"
   workflow_call:
 
 jobs:
   create-cr:
+    if: ${{ github.event.inputs.target_state == 'create' || github.event.inputs.target_state == 'all' }}
     uses: Avee07/github-reusable-workflows/.github/workflows/mock-change-request.yml@main
     with:
       site: rtp
@@ -17,6 +23,7 @@ jobs:
       token: ${{ secrets.GITHUB_TOKEN }}
 
   implement-cr:
+    if: ${{ github.event.inputs.target_state == 'implement' || github.event.inputs.target_state == 'all' }}
     needs: create-cr
     uses: Avee07/github-reusable-workflows/.github/workflows/mock-change-request.yml@main
     with:
@@ -27,6 +34,7 @@ jobs:
       token: ${{ secrets.GITHUB_TOKEN }}
 
   close-cr:
+    if: ${{ github.event.inputs.target_state == 'close' || github.event.inputs.target_state == 'all' }}
     needs: [create-cr, implement-cr]
     uses: Avee07/github-reusable-workflows/.github/workflows/mock-change-request.yml@main
     with:
