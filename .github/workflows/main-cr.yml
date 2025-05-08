@@ -1,30 +1,27 @@
-name: Trigger CR Workflow
+name: Trigger CR Stages
 
 on:
   workflow_dispatch:
-    inputs:
-      site:
-        description: "Site"
-        required: true
-        type: string
-      subnet_info:
-        description: "Subnet Info"
-        required: true
-        type: string
-      state:
-        description: "State (create/implement/close)"
-        required: true
-        type: string
-      script_path:
-        description: "Path to the Python script to run"
-        required: true
-        default: "scripts/hello.py"
 
 jobs:
-  call-cr-handler:
-    uses: Avee07/github-reusable-workflows/.github/workflows/cr-handler.yml@main
+  create-cr:
+    uses: Avee07/github-reusable-workflows/.github/workflows/mock-change-request.yml@main
     with:
-      site: ${{ inputs.site }}
-      subnet_info: ${{ inputs.subnet_info }}
-      state: ${{ inputs.state }}
-      script_path: ${{ inputs.script_path }}
+      site: rtp
+      subnet_info: 10.0.0.1/24
+      state: create
+
+  implement-cr:
+    uses: Avee07/github-reusable-workflows/.github/workflows/mock-change-request.yml@main
+    with:
+      site: rtp
+      subnet_info: 10.0.0.1/24
+      state: implement
+
+  close-cr:
+    uses: Avee07/github-reusable-workflows/.github/workflows/mock-change-request.yml@main
+    with:
+      site: rtp
+      subnet_info: 10.0.0.1/24
+      state: close
+      close_code: close_successful
