@@ -34,6 +34,7 @@ jobs:
     uses: Avee07/github-reusable-workflows/.github/workflows/mock-change-request.yml@main
     with:
       state: implement
+      site: ${{ github.event.inputs.site }}
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -43,6 +44,7 @@ jobs:
     uses: Avee07/github-reusable-workflows/.github/workflows/mock-change-request.yml@main
     with:
       state: close
+      site: ${{ github.event.inputs.site }}
       close_code: close_successful
     secrets:
 
