@@ -15,37 +15,60 @@ on:
         default: "cloud-svldev-1"
       subnet_info:
         description: "Subnet Info"
+      user_data:
+        description: "Enter name,age,place (comma-separated)"
+        required: true
+        default: "John,25,New York"
   workflow_call:
 
 jobs:
-  create-cr:
-    if: ${{ github.event.inputs.create_cr == 'yes' && github.event.inputs.subnet_info != '' }}
-    uses: Avee07/github-reusable-workflows/.github/workflows/mock-change-request.yml@main
-    with:
-      site: ${{ github.event.inputs.site }}
-      subnet_info: ${{ github.event.inputs.subnet_info }}
-      state: create
-    secrets:
-      token: ${{ secrets.GITHUB_TOKEN }}
+  parse-input:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Split user_data input into variables
+        run: |
+          IFS=',' read -r name age place <<< "${{ github.event.inputs.user_data }}"
+          echo "Name: $name"
+          echo "Age: $age"
+          echo "Place: $place"
 
-  implement-cr:
-    if: ${{github.event.inputs.create_cr == 'yes'}}
-    needs: create-cr
-    uses: Avee07/github-reusable-workflows/.github/workflows/mock-change-request.yml@main
-    with:
-      state: implement
-      site: ${{ github.event.inputs.site }}
-    secrets:
-      token: ${{ secrets.GITHUB_TOKEN }}
+          # Save as environment variables for later steps
+          echo "name=$name" >> $GITHUB_ENV
+          echo "age=$age" >> $GITHUB_ENV
+          echo "place=$place" >> $GITHUB_ENV
 
-  close-cr:
-    if: ${{ github.event.inputs.create_cr == 'yes' }}
-    needs: [create-cr, implement-cr]
-    uses: Avee07/github-reusable-workflows/.github/workflows/mock-change-request.yml@main
-    with:
-      state: close
-      site: ${{ github.event.inputs.site }}
-      close_code: close_successful
-    secrets:
+      - name: Use variables in another step
+        run: |
+          echo "User's name is $name, age is $age, and lives in $place."
 
-      token: ${{ secrets.GITHUB_TOKEN }}
+#   create-cr:
+#     if: ${{ github.event.inputs.create_cr == 'yes' && github.event.inputs.subnet_info != '' }}
+#     uses: Avee07/github-reusable-workflows/.github/workflows/mock-change-request.yml@main
+#     with:
+#       site: ${{ github.event.inputs.site }}
+#       subnet_info: ${{ github.event.inputs.subnet_info }}
+#       state: create
+#     secrets:
+#       token: ${{ secrets.GITHUB_TOKEN }}
+
+#   implement-cr:
+#     if: ${{github.event.inputs.create_cr == 'yes'}}
+#     needs: create-cr
+#     uses: Avee07/github-reusable-workflows/.github/workflows/mock-change-request.yml@main
+#     with:
+#       state: implement
+#       site: ${{ github.event.inputs.site }}
+#     secrets:
+#       token: ${{ secrets.GITHUB_TOKEN }}
+
+#   close-cr:
+#     if: ${{ github.event.inputs.create_cr == 'yes' }}
+#     needs: [create-cr, implement-cr]
+#     uses: Avee07/github-reusable-workflows/.github/workflows/mock-change-request.yml@main
+#     with:
+#       state: close
+#       site: ${{ github.event.inputs.site }}
+#       close_code: close_successful
+#     secrets:
+
+#       token: ${{ secrets.GITHUB_TOKEN }}
