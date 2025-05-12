@@ -19,14 +19,19 @@ jobs:
     steps:
       - id: set-vars
         run: |
-          # Set defaults
           input="${{ github.event.inputs.user_data }}"
           IFS=',' read -ra pairs <<< "$input"
+
           for pair in "${pairs[@]}"; do
             key="${pair%%=*}"
             value="${pair#*=}"
-            echo "$key=$value" >> $GITHUB_OUTPUT
-          done"
+
+            case "$key" in
+              name) name="$value" ;;
+              age) age="$value" ;;
+              place) place="$value" ;;
+            esac
+          done
 
           echo "name=$name" >> $GITHUB_OUTPUT
           echo "age=$age" >> $GITHUB_OUTPUT
