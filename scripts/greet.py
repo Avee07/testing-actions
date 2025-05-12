@@ -1,11 +1,10 @@
 import argparse
 
 def main():
-    parser = argparse.ArgumentParser(description="Greet the user with details.")
-    parser.add_argument('--name', required=True, help='Name of the user')
-    parser.add_argument('--age', required=True, help='Age of the user')
-    parser.add_argument('--place', required=True, help='Place where the user lives')
-
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--name', required=True)
+    parser.add_argument('--age', required=True)
+    parser.add_argument('--place', required=True)
     args = parser.parse_args()
 
     print(f"Hello, {args.name}!")
@@ -13,3 +12,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+s

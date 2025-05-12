@@ -1,25 +1,12 @@
-name: Trigger CR Stages
+name: Named Args with Fallbacks
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
     inputs:
-      create_cr:
-        description: "Yes or No"
-        required: true
-        default: "yes"
-      site:
-        description: "Site"
-        required: true
-        default: "cloud-svldev-1"
-      subnet_info:
-        description: "Subnet Info"
       user_data:
-        description: "Enter variables like name=John,age=20,place=LA"
+        description: "Enter variables like name=Alice,age=28,place=Berlin"
         required: true
-        default: "name=John,age=20,place=LA"
-  workflow_call:
+        default: "name=Alice,place=Berlin"
 
 jobs:
   parse:
@@ -28,24 +15,32 @@ jobs:
       name: ${{ steps.set-vars.outputs.name }}
       age: ${{ steps.set-vars.outputs.age }}
       place: ${{ steps.set-vars.outputs.place }}
-    steps:
-      - name: Parse key=value pairs
-        id: set-vars
-        run: |
-          input="${{ github.event.inputs.user_data }}"
 
-          # Split by comma
+    steps:
+      - id: set-vars
+        run: |
+          # Set defaults
+          name="Unknown"
+          age="0"
+          place="Nowhere"
+
+          input="${{ github.event.inputs.user_data }}"
           IFS=',' read -ra pairs <<< "$input"
+
           for pair in "${pairs[@]}"; do
             key="${pair%%=*}"
             value="${pair#*=}"
-            echo "$key=$value"
-            echo "$key=$value" >> $GITHUB_ENV
+
+            case "$key" in
+              name) name="$value" ;;
+              age) age="$value" ;;
+              place) place="$value" ;;
+            esac
           done
 
-      - name: Use parsed variables
-        run: |
-          echo "User's name is $name, age is $age, and lives in $place."
+          echo "name=$name" >> $GITHUB_OUTPUT
+          echo "age=$age" >> $GITHUB_OUTPUT
+          echo "place=$place" >> $GITHUB_OUTPUT
 
   run-script:
     needs: parse
@@ -55,41 +50,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run Python script with named arguments
+      - name: Run Python script with named args
         run: |
           python3 scripts/greet.py \
             --name="${{ needs.parse.outputs.name }}" \
             --age="${{ needs.parse.outputs.age }}" \
             --place="${{ needs.parse.outputs.place }}"
-
-#   create-cr:
-#     if: ${{ github.event.inputs.create_cr == 'yes' && github.event.inputs.subnet_info != '' }}
-#     uses: Avee07/github-reusable-workflows/.github/workflows/mock-change-request.yml@main
-#     with:
-#       site: ${{ github.event.inputs.site }}
-#       subnet_info: ${{ github.event.inputs.subnet_info }}
-#       state: create
-#     secrets:
-#       token: ${{ secrets.GITHUB_TOKEN }}
-
-#   implement-cr:
-#     if: ${{github.event.inputs.create_cr == 'yes'}}
-#     needs: create-cr
-#     uses: Avee07/github-reusable-workflows/.github/workflows/mock-change-request.yml@main
-#     with:
-#       state: implement
-#       site: ${{ github.event.inputs.site }}
-#     secrets:
-#       token: ${{ secrets.GITHUB_TOKEN }}
-
-#   close-cr:
-#     if: ${{ github.event.inputs.create_cr == 'yes' }}
-#     needs: [create-cr, implement-cr]
-#     uses: Avee07/github-reusable-workflows/.github/workflows/mock-change-request.yml@main
-#     with:
-#       state: close
-#       site: ${{ github.event.inputs.site }}
-#       close_code: close_successful
-#     secrets:
-
-#       token: ${{ secrets.GITHUB_TOKEN }}
