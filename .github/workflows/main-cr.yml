@@ -16,28 +16,29 @@ on:
       subnet_info:
         description: "Subnet Info"
       user_data:
-        description: "Enter name,age,place (comma-separated)"
+        description: "Enter variables like name=John,age=20,place=LA"
         required: true
-        default: "John,25,New York"
+        default: "name=John,age=20,place=LA"
   workflow_call:
 
 jobs:
   parse-input:
     runs-on: ubuntu-latest
     steps:
-      - name: Split user_data input into variables
+      - name: Parse key=value pairs
         run: |
-          IFS=',' read -r name age place <<< "${{ github.event.inputs.user_data }}"
-          echo "Name: $name"
-          echo "Age: $age"
-          echo "Place: $place"
+          input="${{ github.event.inputs.user_data }}"
 
-          # Save as environment variables for later steps
-          echo "name=$name" >> $GITHUB_ENV
-          echo "age=$age" >> $GITHUB_ENV
-          echo "place=$place" >> $GITHUB_ENV
+          # Split by comma
+          IFS=',' read -ra pairs <<< "$input"
+          for pair in "${pairs[@]}"; do
+            key="${pair%%=*}"
+            value="${pair#*=}"
+            echo "$key=$value"
+            echo "$key=$value" >> $GITHUB_ENV
+          done
 
-      - name: Use variables in another step
+      - name: Use parsed variables
         run: |
           echo "User's name is $name, age is $age, and lives in $place."
 
