@@ -31,13 +31,6 @@ jobs:
             key="${pair%%=*}"
             value="${pair#*=}"
 
-            case "$key" in
-              name) name="$value" ;;
-              age) age="$value" ;;
-              place) place="$value" ;;
-            esac
-          done
-
           echo "name=$name" >> $GITHUB_OUTPUT
           echo "age=$age" >> $GITHUB_OUTPUT
           echo "place=$place" >> $GITHUB_OUTPUT
