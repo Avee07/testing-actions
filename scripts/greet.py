@@ -13,6 +13,7 @@ def main():
     
     # Get GitHub actor from environment variable
     actor = os.getenv("GITHUB_ACTOR", "unknown")
+    actor = actor.split('_')[0]
 
     print(f"🚀 This workflow was triggered by: {actor}")
 
