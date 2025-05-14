@@ -7,6 +7,7 @@ on:
         description: "Enter variables like name=Alice,age=28,place=Berlin"
         required: true
         default: "name=Alice,place=Berlin"
+  push:
 
 jobs:
   parse:
@@ -55,7 +56,7 @@ jobs:
           GITHUB_ACTORS: "aveeeSi_google"
 
       - name: Run script to generate serial
-        run: python3 generate_serial.py
+        run: python3 scripts/generate_serial.py
 
       - name: Upload serial as artifact
         uses: actions/upload-artifact@v4
