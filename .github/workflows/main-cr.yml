@@ -52,4 +52,4 @@ jobs:
             --age="${{ needs.parse.outputs.age }}" \
             --place="${{ needs.parse.outputs.place }}"
         env:
-          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_ACTOR: "aveeeSi_google"
