@@ -53,3 +53,33 @@ jobs:
             --place="${{ needs.parse.outputs.place }}"
         env:
           GITHUB_ACTORS: "aveeeSi_google"
+
+      - name: Run script to generate serial
+        run: python3 generate_serial.py
+
+      - name: Upload serial as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: serial-artifact
+          path: artofcats.txt
+
+  consume:
+    needs: run-script
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download serial artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: serial-artifact
+
+      - name: Read and use serial number
+        id: read_serial
+        run: |
+          serial=$(cat artofcats.txt)
+          echo "🔁 Serial from file: $serial"
+          echo "serial_number=$serial" >> $GITHUB_OUTPUT
+
+      - name: Use the serial
+        run: echo "🐾 The serial number is ${{ steps.read_serial.outputs.serial_number }}"
+
