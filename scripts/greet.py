@@ -1,4 +1,5 @@
 import argparse
+import os
 
 def main():
     parser = argparse.ArgumentParser()
@@ -9,6 +10,11 @@ def main():
 
     print(f"Hello, {args.name}!")
     print(f"You are {args.age} years old and live in {args.place}.")
+    
+    # Get GitHub actor from environment variable
+    actor = os.getenv("GITHUB_ACTOR", "unknown")
+
+    print(f"🚀 This workflow was triggered by: {actor}")
 
 if __name__ == "__main__":
     main()
