@@ -26,12 +26,20 @@ jobs:
 
       - name: Set INPUT_1 and run Python
         run: |
-          if [ "${{ github.event.schedule }}" == "*/5 * * * *" ]; then
-            export INPUT_1=5
-          elif [ "${{ github.event.schedule }}" == "*/10 * * * *" ]; then
-            export INPUT_1=10
-          elif ["${{github.event.inputs.input1}}"]; then
-            export INPUT_1=${{github.event.inputs.input1}}
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            if [ "${{ github.event.schedule }}" = "*/5 * * * *" ]; then
+              export INPUT_1=5
+            elif [ "${{ github.event.schedule }}" = "*/10 * * * *" ]; then
+              export INPUT_1=10
+            else
+              export INPUT_1="unknown"
+            fi
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            if [ -n "${{ github.event.inputs.input1 }}" ]; then
+              export INPUT_1="${{ github.event.inputs.input1 }}"
+            else
+              export INPUT_1="unknown"
+            fi
           else
             export INPUT_1="unknown"
           fi
