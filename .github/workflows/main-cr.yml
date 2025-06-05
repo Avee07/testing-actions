@@ -30,6 +30,8 @@ jobs:
             export INPUT_1=5
           elif [ "${{ github.event.schedule }}" == "*/10 * * * *" ]; then
             export INPUT_1=10
+          elif ["${{github.event.inputs.input1}}"]; then
+            export INPUT_1=${{github.event.inputs.input1}}
           else
             export INPUT_1="unknown"
           fi
