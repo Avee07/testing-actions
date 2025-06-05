@@ -1,86 +1,31 @@
-name: Named Args with Fallbacks
+name: Frequent Cron Jobs
 
 on:
-  workflow_dispatch:
-    inputs:
-      user_data:
-        description: "Enter variables like name=Alice,age=28,place=Berlin"
-        required: true
-        default: "name=Alice,place=Berlin"
-  push:
+  schedule:
+    - cron: '*/5 * * * *'   # Every 5 minutes
+    - cron: '*/10 * * * *'  # Every 10 minutes
 
 jobs:
-  parse:
-    runs-on: ubuntu-latest
-    outputs:
-      name: ${{ steps.set-vars.outputs.name }}
-      age: ${{ steps.set-vars.outputs.age }}
-      place: ${{ steps.set-vars.outputs.place }}
-
-    steps:
-      - id: set-vars
-        run: |
-          input="${{ github.event.inputs.user_data }}"
-          IFS=',' read -ra pairs <<< "$input"
-
-          for pair in "${pairs[@]}"; do
-            key="${pair%%=*}"
-            value="${pair#*=}"
-
-            case "$key" in
-              name) name="$value" ;;
-              age) age="$value" ;;
-              place) place="$value" ;;
-            esac
-          done
-
-          echo "name=$name" >> $GITHUB_OUTPUT
-          echo "age=$age" >> $GITHUB_OUTPUT
-          echo "place=$place" >> $GITHUB_OUTPUT
-
-  run-script:
-    needs: parse
+  cron-job:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run Python script with named args
-        run: |
-          python3 scripts/greet.py \
-            --name="${{ needs.parse.outputs.name }}" \
-            --age="${{ needs.parse.outputs.age }}" \
-            --place="${{ needs.parse.outputs.place }}"
-        env:
-          GITHUB_ACTORS: "aveeeSi_google"
-
-      - name: Run script to generate serial
-        run: python3 scripts/generate_serial.py
-
-      - name: Upload serial as artifact
-        uses: actions/upload-artifact@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          name: serial-artifact
-          path: artofcats.txt
+          python-version: '3.x'
 
-  consume:
-    needs: run-script
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Download serial artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: serial-artifact
-
-      - name: Read and use serial number
-        id: read_serial
+      - name: Set INPUT_1 and run Python
         run: |
-          serial=$(cat artofcats.txt)
-          echo "🔁 Serial from file: $serial"
-          echo "serial_number=$serial" >> $GITHUB_OUTPUT
+          if [ "${{ github.event.schedule }}" == "*/5 * * * *" ]; then
+            export INPUT_1=5
+          elif [ "${{ github.event.schedule }}" == "*/10 * * * *" ]; then
+            export INPUT_1=10
+          else
+            export INPUT_1="unknown"
+          fi
 
-      - name: Use the serial
-        run: echo "🐾 The serial number is ${{ steps.read_serial.outputs.serial_number }}"
-
+          python main.py
