@@ -10,14 +10,6 @@ on:
         description: "Custom value for INPUT_1"
         required: true
         default: "42"
-  workflow_call:
-    inputs:
-      script_path:
-        required: true
-        type: string
-    secrets:
-      GH_PAT:
-        required: true
 
 jobs:
   call-run-script:
