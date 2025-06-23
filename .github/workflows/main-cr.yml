@@ -10,8 +10,20 @@ on:
         description: "Custom value for INPUT_1"
         required: true
         default: "42"
+  workflow_call:
+    inputs:
+      script_path:
+        required: true
+        type: string
+    secrets:
+      GH_PAT:
+        required: true
 
 jobs:
+  call-run-script:
+    uses: Avee07/github-reusable-workflows/.github/workflows/scriptutil.yaml@main
+    with:
+      site: ${{ github.event.inputs.input1 }}
   cron-job:
     runs-on: ubuntu-latest
 
