@@ -16,6 +16,8 @@ jobs:
     uses: Avee07/github-reusable-workflows/.github/workflows/scriptutil.yaml@main
     with:
       site: ${{ github.event.inputs.input1 }}
+    secrets:
+      token: ${{ secrets.GH_PAT }}
   cron-job:
     runs-on: ubuntu-latest
 
